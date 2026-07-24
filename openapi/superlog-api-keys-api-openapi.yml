@@ -1,0 +1,164 @@
+openapi: 3.1.0
+info:
+  title: Superlog Management API keys API
+  description: Programmatic surface for provisioning projects, ingest keys, and GitHub access. Authenticated with org-scoped management keys (prefix `sl_management_*`).
+  version: 1.0.0
+servers:
+- url: https://api.superlog.sh
+  description: Production
+- url: http://localhost:4100
+  description: Local dev
+security:
+- bearerAuth: []
+tags:
+- name: API keys
+paths:
+  /api/v1/projects/{projectId}/api-keys:
+    post:
+      operationId: postApiV1ProjectsByProjectIdApiKeys
+      tags:
+      - API keys
+      summary: Mint a new ingest API key
+      responses:
+        '200':
+          description: Key minted (plaintext shown once)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      key_prefix:
+                        type: string
+                        description: Stable prefix of the key (safe to display).
+                      plaintext:
+                        type: string
+                        description: Full key. Shown once — store immediately.
+                    required:
+                    - id
+                    - name
+                    - key_prefix
+                    - plaintext
+                required:
+                - api_key
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+    get:
+      operationId: getApiV1ProjectsByProjectIdApiKeys
+      tags:
+      - API keys
+      summary: List ingest API keys for a project
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        key_prefix:
+                          type: string
+                        last_used_at:
+                          anyOf:
+                          - type: string
+                            format: date-time
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                          - type: 'null'
+                        revoked_at:
+                          anyOf:
+                          - type: string
+                            format: date-time
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                          - type: 'null'
+                        created_at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      required:
+                      - id
+                      - name
+                      - key_prefix
+                      - last_used_at
+                      - revoked_at
+                      - created_at
+                required:
+                - api_keys
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sl_management_*

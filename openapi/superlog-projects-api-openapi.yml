@@ -1,0 +1,614 @@
+openapi: 3.1.0
+info:
+  title: Superlog Management API keys Projects API
+  description: Programmatic surface for provisioning projects, ingest keys, and GitHub access. Authenticated with org-scoped management keys (prefix `sl_management_*`).
+  version: 1.0.0
+servers:
+- url: https://api.superlog.sh
+  description: Production
+- url: http://localhost:4100
+  description: Local dev
+security:
+- bearerAuth: []
+tags:
+- name: Projects
+paths:
+  /api/v1/projects:
+    post:
+      operationId: postApiV1Projects
+      tags:
+      - Projects
+      summary: Create a project
+      description: Creates a new project in the authed org. Optionally mints an initial ingest key in the same call (default behavior).
+      responses:
+        '200':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                      project_context:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      automerge_fix_prs:
+                        type: string
+                        enum:
+                        - never
+                        - when_checks_pass
+                        - immediately
+                        description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                      automerge_method:
+                        type: string
+                        enum:
+                        - squash
+                        - merge
+                        - rebase
+                        description: Merge strategy used for auto-merge.
+                      pr_base_branch:
+                        anyOf:
+                        - type: string
+                          maxLength: 200
+                        - type: 'null'
+                        description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+                    required:
+                    - id
+                    - name
+                    - slug
+                    - project_context
+                    - automerge_fix_prs
+                    - automerge_method
+                    - pr_base_branch
+                    description: Project metadata.
+                  api_key:
+                    anyOf:
+                    - type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        key_prefix:
+                          type: string
+                          description: Stable prefix of the key (safe to display).
+                        plaintext:
+                          type: string
+                          description: Full key. Shown once — store immediately.
+                      required:
+                      - id
+                      - name
+                      - key_prefix
+                      - plaintext
+                    - type: 'null'
+                    description: Present when mint_ingest_key is true (default); null otherwise.
+                required:
+                - project
+                - api_key
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '409':
+          description: Conflict (e.g. slug already in use)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                slug:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  pattern: ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$
+                project_context:
+                  type: string
+                  maxLength: 8000
+                mint_ingest_key:
+                  default: true
+                  description: If true, mint an initial ingest key alongside the project.
+                  type: boolean
+                automerge_fix_prs:
+                  type: string
+                  enum:
+                  - never
+                  - when_checks_pass
+                  - immediately
+                  description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                automerge_method:
+                  type: string
+                  enum:
+                  - squash
+                  - merge
+                  - rebase
+                  description: Merge strategy used for auto-merge.
+                pr_base_branch:
+                  anyOf:
+                  - type: string
+                    maxLength: 200
+                  - type: 'null'
+                  description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+              required:
+              - name
+              - slug
+    get:
+      operationId: getApiV1Projects
+      tags:
+      - Projects
+      summary: List projects in the org
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        slug:
+                          type: string
+                        project_context:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                        automerge_fix_prs:
+                          type: string
+                          enum:
+                          - never
+                          - when_checks_pass
+                          - immediately
+                          description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                        automerge_method:
+                          type: string
+                          enum:
+                          - squash
+                          - merge
+                          - rebase
+                          description: Merge strategy used for auto-merge.
+                        pr_base_branch:
+                          anyOf:
+                          - type: string
+                            maxLength: 200
+                          - type: 'null'
+                          description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+                      required:
+                      - id
+                      - name
+                      - slug
+                      - project_context
+                      - automerge_fix_prs
+                      - automerge_method
+                      - pr_base_branch
+                      description: Project metadata.
+                required:
+                - projects
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  /api/v1/projects/{projectId}:
+    get:
+      operationId: getApiV1ProjectsByProjectId
+      tags:
+      - Projects
+      summary: Get a project
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                      project_context:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      automerge_fix_prs:
+                        type: string
+                        enum:
+                        - never
+                        - when_checks_pass
+                        - immediately
+                        description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                      automerge_method:
+                        type: string
+                        enum:
+                        - squash
+                        - merge
+                        - rebase
+                        description: Merge strategy used for auto-merge.
+                      pr_base_branch:
+                        anyOf:
+                        - type: string
+                          maxLength: 200
+                        - type: 'null'
+                        description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+                    required:
+                    - id
+                    - name
+                    - slug
+                    - project_context
+                    - automerge_fix_prs
+                    - automerge_method
+                    - pr_base_branch
+                    description: Project metadata.
+                required:
+                - project
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+    patch:
+      operationId: patchApiV1ProjectsByProjectId
+      tags:
+      - Projects
+      summary: Update a project
+      description: Partial update. Only fields present in the body are written.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                      project_context:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      automerge_fix_prs:
+                        type: string
+                        enum:
+                        - never
+                        - when_checks_pass
+                        - immediately
+                        description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                      automerge_method:
+                        type: string
+                        enum:
+                        - squash
+                        - merge
+                        - rebase
+                        description: Merge strategy used for auto-merge.
+                      pr_base_branch:
+                        anyOf:
+                        - type: string
+                          maxLength: 200
+                        - type: 'null'
+                        description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+                    required:
+                    - id
+                    - name
+                    - slug
+                    - project_context
+                    - automerge_fix_prs
+                    - automerge_method
+                    - pr_base_branch
+                    description: Project metadata.
+                required:
+                - project
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '409':
+          description: Conflict (e.g. slug already in use)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                slug:
+                  type: string
+                  minLength: 1
+                  maxLength: 40
+                  pattern: ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$
+                project_context:
+                  type: string
+                  maxLength: 8000
+                automerge_fix_prs:
+                  type: string
+                  enum:
+                  - never
+                  - when_checks_pass
+                  - immediately
+                  description: Controls whether the agent's auto-opened fix PRs are merged. 'when_checks_pass' uses GitHub native auto-merge; 'immediately' calls the merge API right after PR open.
+                automerge_method:
+                  type: string
+                  enum:
+                  - squash
+                  - merge
+                  - rebase
+                  description: Merge strategy used for auto-merge.
+                pr_base_branch:
+                  anyOf:
+                  - type: string
+                    maxLength: 200
+                  - type: 'null'
+                  description: Target branch for agent-opened PRs. Null or blank uses the repository default branch.
+              description: Partial update. Only fields present in the body are written.
+  /api/v1/projects/{projectId}/sourcemaps:
+    post:
+      operationId: postApiV1ProjectsByProjectIdSourcemaps
+      tags:
+      - Projects
+      summary: Upload a source map artifact
+      description: Uploads a compressed source map artifact for later issue symbolication. Accepts either a project-scoped `sl_public_*` ingest key for this project or a server-side `sl_management_*` key for the org.
+      responses:
+        '200':
+          description: Source map stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    const: true
+                required:
+                - ok
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                  minLength: 1
+                  maxLength: 32
+                release:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                dist:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                debugId:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                bundleFile:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                mapFile:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                sourceMap:
+                  type: string
+                  minLength: 2
+                sourceMapHash:
+                  type: string
+                  pattern: ^[a-f0-9]{64}$
+                sourceMapBytes:
+                  type: integer
+                  exclusiveMinimum: 0
+                  maximum: 26214400
+              required:
+              - platform
+              - release
+              - mapFile
+              - sourceMap
+              - sourceMapHash
+              - sourceMapBytes
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sl_management_*

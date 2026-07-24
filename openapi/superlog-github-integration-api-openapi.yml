@@ -1,0 +1,542 @@
+openapi: 3.1.0
+info:
+  title: Superlog Management API keys GitHub integration API
+  description: Programmatic surface for provisioning projects, ingest keys, and GitHub access. Authenticated with org-scoped management keys (prefix `sl_management_*`).
+  version: 1.0.0
+servers:
+- url: https://api.superlog.sh
+  description: Production
+- url: http://localhost:4100
+  description: Local dev
+security:
+- bearerAuth: []
+tags:
+- name: GitHub integration
+paths:
+  /api/v1/integrations/github/install-url:
+    post:
+      operationId: postApiV1IntegrationsGithubInstallUrl
+      tags:
+      - GitHub integration
+      summary: Mint an org-scoped GitHub App install URL
+      description: Resulting install is owned by the org and can be granted to multiple projects. `return_url` host must be in the org's allowlist.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  install_url:
+                    type: string
+                    format: uri
+                required:
+                - install_url
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '503':
+          description: GitHub App not configured server-side
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  /api/v1/projects/{projectId}/integrations/github/install-url:
+    post:
+      operationId: postApiV1ProjectsByProjectIdIntegrationsGithubInstallUrl
+      tags:
+      - GitHub integration
+      summary: Mint a project-scoped GitHub App install URL
+      description: Resulting install is bound to one project and is NOT listed by `GET /api/v1/integrations/github/installations`.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  install_url:
+                    type: string
+                    format: uri
+                required:
+                - install_url
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '503':
+          description: GitHub App not configured server-side
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+  /api/v1/integrations/github/installations:
+    get:
+      operationId: getApiV1IntegrationsGithubInstallations
+      tags:
+      - GitHub integration
+      summary: List org-scoped GitHub installs
+      description: Project-scoped installs and revoked / suspended installs are excluded.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  installations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        installation_id:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          description: GitHub's numeric install ID.
+                        account_login:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        account_type:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        created_at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      required:
+                      - id
+                      - installation_id
+                      - account_login
+                      - account_type
+                      - created_at
+                required:
+                - installations
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  /api/v1/integrations/github/installations/{installationRowId}/repos:
+    get:
+      operationId: getApiV1IntegrationsGithubInstallationsByInstallationRowIdRepos
+      tags:
+      - GitHub integration
+      summary: List repos an install covers (live)
+      description: Live call to GitHub. Capped at 1000 repos; `truncated=true` means more exist. You can still grant a beyond-cap repo by passing its numeric ID to the grant endpoint (O(1) lookup).
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        full_name:
+                          type: string
+                        private:
+                          type: boolean
+                      required:
+                      - id
+                      - full_name
+                      - private
+                  truncated:
+                    type: boolean
+                    description: True if the install has more repos than the listing endpoint returns (cap is 1000).
+                required:
+                - repos
+                - truncated
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '502':
+          description: Upstream GitHub call failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: installationRowId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+  /api/v1/projects/{projectId}/github/repos:
+    post:
+      operationId: postApiV1ProjectsByProjectIdGithubRepos
+      tags:
+      - GitHub integration
+      summary: Grant a project access to a repo
+      description: Validates the install belongs to this org and the repo is covered by it (live GitHub check) so a leaked management key can't grant access to arbitrary repo IDs.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grant:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      installation_id:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      repo_id:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      repo_full_name:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                    required:
+                    - id
+                    - installation_id
+                    - repo_id
+                    - repo_full_name
+                    - created_at
+                required:
+                - grant
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '502':
+          description: Upstream GitHub call failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                installation_id:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  description: Install row UUID (from GET .../installations).
+                repo_id:
+                  type: integer
+                  exclusiveMinimum: 0
+                  maximum: 9007199254740991
+                  description: GitHub numeric repo ID.
+              required:
+              - installation_id
+              - repo_id
+    get:
+      operationId: getApiV1ProjectsByProjectIdGithubRepos
+      tags:
+      - GitHub integration
+      summary: List repo grants on a project
+      description: Grants whose underlying install has been revoked are filtered out.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grants:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        installation_id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        repo_id:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        repo_full_name:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+                      required:
+                      - id
+                      - installation_id
+                      - repo_id
+                      - repo_full_name
+                      - created_at
+                required:
+                - grants
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+  /api/v1/projects/{projectId}/github/repos/{repoId}:
+    delete:
+      operationId: deleteApiV1ProjectsByProjectIdGithubReposByRepoId
+      tags:
+      - GitHub integration
+      summary: Revoke a project's grant on a repo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    const: true
+                required:
+                - ok
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      - in: path
+        name: repoId
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sl_management_*

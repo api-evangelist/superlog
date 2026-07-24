@@ -1,0 +1,282 @@
+openapi: 3.1.0
+info:
+  title: Superlog Management API keys Telemetry read API
+  description: Programmatic surface for provisioning projects, ingest keys, and GitHub access. Authenticated with org-scoped management keys (prefix `sl_management_*`).
+  version: 1.0.0
+servers:
+- url: https://api.superlog.sh
+  description: Production
+- url: http://localhost:4100
+  description: Local dev
+security:
+- bearerAuth: []
+tags:
+- name: Telemetry read
+paths:
+  /api/v1/projects/{projectId}/traces/{traceId}:
+    get:
+      operationId: getApiV1ProjectsByProjectIdTracesByTraceId
+      tags:
+      - Telemetry read
+      summary: Get a trace by id
+      description: Returns all spans and correlated logs for the given trace.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                additionalProperties: {}
+                description: ClickHouse rows. Shape mirrors what the dashboard /explore/* endpoints return.
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      - in: path
+        name: traceId
+        schema:
+          type: string
+          pattern: ^[a-fA-F0-9]{1,64}$
+        required: true
+        description: Hex-encoded OTLP trace id.
+  /api/v1/projects/{projectId}/logs:
+    get:
+      operationId: getApiV1ProjectsByProjectIdLogs
+      tags:
+      - Telemetry read
+      summary: Query logs
+      description: Returns log rows filtered by any combination of trace_id, service, severity, free-text search, and time range. Newest first.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                additionalProperties: {}
+                description: ClickHouse rows. Shape mirrors what the dashboard /explore/* endpoints return.
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      - in: query
+        name: trace_id
+        schema:
+          type: string
+          pattern: ^[a-fA-F0-9]{1,64}$
+        description: Hex-encoded OTLP trace id.
+      - in: query
+        name: service
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - in: query
+        name: severity
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 40
+      - in: query
+        name: search
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 500
+      - in: query
+        name: from
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 'ISO 8601 timestamp (e.g. ''2026-05-25T19:00:00Z'') or a ClickHouse relative expression (e.g. ''now() - INTERVAL 1 HOUR''). Defaults: from=1h ago, to=now.'
+      - in: query
+        name: to
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 'ISO 8601 timestamp (e.g. ''2026-05-25T19:00:00Z'') or a ClickHouse relative expression (e.g. ''now() - INTERVAL 1 HOUR''). Defaults: from=1h ago, to=now.'
+      - in: query
+        name: limit
+        schema:
+          default: 100
+          type: integer
+          minimum: 1
+          maximum: 500
+  /api/v1/projects/{projectId}/metrics:
+    get:
+      operationId: getApiV1ProjectsByProjectIdMetrics
+      tags:
+      - Telemetry read
+      summary: Query metric data points
+      description: Returns metric data points across sum/gauge/histogram tables, filtered by metric name and (optionally) service / time range.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                additionalProperties: {}
+                description: ClickHouse rows. Shape mirrors what the dashboard /explore/* endpoints return.
+        '400':
+          description: Malformed input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '401':
+          description: Missing / wrong-type / revoked token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+        '404':
+          description: Resource not found in this org
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      parameters:
+      - in: path
+        name: projectId
+        schema:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        required: true
+      - in: query
+        name: name
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+        required: true
+        description: Metric name (e.g. 'http.server.duration').
+      - in: query
+        name: service
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+      - in: query
+        name: from
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 'ISO 8601 timestamp (e.g. ''2026-05-25T19:00:00Z'') or a ClickHouse relative expression (e.g. ''now() - INTERVAL 1 HOUR''). Defaults: from=1h ago, to=now.'
+      - in: query
+        name: to
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description: 'ISO 8601 timestamp (e.g. ''2026-05-25T19:00:00Z'') or a ClickHouse relative expression (e.g. ''now() - INTERVAL 1 HOUR''). Defaults: from=1h ago, to=now.'
+      - in: query
+        name: limit
+        schema:
+          default: 100
+          type: integer
+          minimum: 1
+          maximum: 500
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sl_management_*
