@@ -1,7 +1,14 @@
 aid: superlog
 name: Superlog
-description: Superlog is a company surfaced as a portfolio company of y-combinator and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Superlog is an AI-native, open-core observability platform (Y Combinator, Spring 2026)
+  that ingests OpenTelemetry traces, logs, and metrics over OTLP, groups noisy signals into
+  incidents, and dispatches AI agents to investigate root causes and open fix pull requests
+  automatically. It offers a Management REST API for provisioning projects and ingest keys,
+  OTLP ingest endpoints, a hosted Model Context Protocol (MCP) server so coding assistants
+  like Claude and Cursor can query telemetry and incidents, signed incident webhooks, and
+  GitHub/Slack/Linear/AWS integrations. The Community edition is Apache-2.0 licensed and
+  self-hostable via Docker Compose; Superlog Cloud is the managed offering.
 url: https://raw.githubusercontent.com/api-evangelist/superlog/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -9,14 +16,154 @@ x-backed-by:
 - y-combinator
 x-tier: stub
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
+image: https://media.brand.dev/b517a2c9-12a7-4caa-9afc-34d21e942292.jpg
 tags:
 - Company
-apis: []
+- Observability
+- OpenTelemetry
+- Monitoring
+- Logging
+- Tracing
+- Metrics
+- Incident Management
+- AI Agents
+- Model Context Protocol
+- Developer Tools
+apis:
+- aid: superlog:superlog-api-keys-api
+  name: Superlog API keys API
+  description: The API keys API from Superlog — 1 operation(s) for api keys.
+  humanURL: https://docs.superlog.sh/api/overview
+  baseURL: https://api.superlog.sh
+  tags:
+  - API keys
+  properties:
+  - type: OpenAPI
+    url: openapi/superlog-api-keys-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/superlog-problem-types.yml
+  - type: DataModel
+    url: data-model/superlog-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/superlog-agentic-access.yml
+- aid: superlog:superlog-github-integration-api
+  name: Superlog GitHub integration API
+  description: The GitHub integration API from Superlog — 6 operation(s) for github integration.
+  humanURL: https://docs.superlog.sh/api/overview
+  baseURL: https://api.superlog.sh
+  tags:
+  - GitHub integration
+  properties:
+  - type: OpenAPI
+    url: openapi/superlog-github-integration-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/superlog-problem-types.yml
+  - type: DataModel
+    url: data-model/superlog-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/superlog-agentic-access.yml
+- aid: superlog:superlog-projects-api
+  name: Superlog Projects API
+  description: The Projects API from Superlog — 3 operation(s) for projects.
+  humanURL: https://docs.superlog.sh/api/overview
+  baseURL: https://api.superlog.sh
+  tags:
+  - Projects
+  properties:
+  - type: OpenAPI
+    url: openapi/superlog-projects-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/superlog-problem-types.yml
+  - type: DataModel
+    url: data-model/superlog-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/superlog-agentic-access.yml
+- aid: superlog:superlog-telemetry-read-api
+  name: Superlog Telemetry read API
+  description: The Telemetry read API from Superlog — 3 operation(s) for telemetry read.
+  humanURL: https://docs.superlog.sh/api/overview
+  baseURL: https://api.superlog.sh
+  tags:
+  - Telemetry read
+  properties:
+  - type: OpenAPI
+    url: openapi/superlog-telemetry-read-api-openapi.yml
+  - type: ErrorCatalog
+    url: errors/superlog-problem-types.yml
+  - type: DataModel
+    url: data-model/superlog-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/superlog-agentic-access.yml
+common:
+- type: TrustCenter
+  url: security/superlog-trust-center.yml
+- type: Compliance
+  url: https://trust.superlog.sh/
+- type: Arazzo
+  name: Provision a Superlog project and mint an ingest key
+  url: arazzo/superlog-provision-project.yml
+- type: DeveloperPortal
+  url: https://docs.superlog.sh
+- type: Documentation
+  url: https://docs.superlog.sh/introduction
+- type: APIReference
+  url: https://api.superlog.sh/api/v1/docs
+- type: GettingStarted
+  url: https://docs.superlog.sh/quickstart
+- type: GitHubOrganization
+  url: https://github.com/superloglabs
+- type: SignUp
+  url: https://app.superlog.sh
+- type: Authentication
+  url: authentication/superlog-authentication.yml
+- type: OAuthScopes
+  url: scopes/superlog-scopes.yml
+- type: MCPServer
+  url: mcp/superlog-mcp.yml
+- type: Packages
+  url: packages/superlog-packages.yml
+- type: SDKs
+  url: packages/superlog-packages.yml
+- type: CLI
+  url: cli/superlog-cli.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/superlog-well-known.yml
+- type: Webhooks
+  url: asyncapi/superlog-webhooks.yml
+- type: Conventions
+  url: conventions/superlog-conventions.yml
+- type: Conformance
+  url: conformance/superlog-conformance.yml
+- type: Lifecycle
+  url: lifecycle/superlog-lifecycle.yml
+- type: DomainSecurity
+  url: security/superlog-domain-security.yml
+- type: LLMsTxt
+  url: llms/superlog-llms.txt
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1

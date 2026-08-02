@@ -1,0 +1,20 @@
+{
+  "provider": "superlog",
+  "sources": [
+    "superlog-api-keys-api-openapi.yml",
+    "superlog-github-integration-api-openapi.yml",
+    "superlog-projects-api-openapi.yml",
+    "superlog-telemetry-read-api-openapi.yml"
+  ],
+  "outputs": [
+    "superlog-api-keys-api-openapi.yml",
+    "superlog-github-integration-api-openapi.yml",
+    "superlog-projects-api-openapi.yml",
+    "superlog-telemetry-read-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

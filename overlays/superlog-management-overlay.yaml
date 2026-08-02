@@ -1,0 +1,27 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Superlog Management API
+  version: 1.0.0
+extends: openapi/superlog-management-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-rating: 4
+    x-apievangelist-notes: >-
+      Rich agent-native surface — OpenAPI 3.1, hosted MCP server, OAuth 2.0 (PKCE + DCR),
+      signed webhooks, published Agent Skills, Apache-2.0 self-hostable. Gaps: custom error
+      envelope (not RFC 9457), no request idempotency key, no public status page/SLA yet.
+- target: $.info
+  update:
+    x-artifacts:
+      mcp: mcp/superlog-mcp.yml
+      webhooks: asyncapi/superlog-webhooks.yml
+      authentication: authentication/superlog-authentication.yml
+      scopes: scopes/superlog-scopes.yml
+      conventions: conventions/superlog-conventions.yml
+      errors: errors/superlog-problem-types.yml
+      data_model: data-model/superlog-data-model.yml
+- target: $.tags
+  update:
+  - name: Telemetry read
+    description: Query stored traces, logs, and metrics over REST.

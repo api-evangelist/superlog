@@ -1,0 +1,43 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/superlog-management-openapi.json
+docs: https://docs.superlog.sh/api/overview
+format: custom
+envelope: '{ "error": "human-readable message" }'
+note: >-
+  Superlog uses standard HTTP status codes with a single-field JSON error envelope
+  ({"error": "..."}) — NOT RFC 9457 application/problem+json. Statuses derived from the
+  OpenAPI 4xx/5xx responses and enriched from the docs error-code table.
+problems:
+- status: 400
+  title: Bad Request
+  meaning: Malformed or invalid request body / query parameters.
+- status: 401
+  title: Unauthorized
+  meaning: Token is missing, the wrong type, or has been revoked. E.g. "wrong credential type".
+  remediation: Send an sl_management_* key to /api/v1/* and an sl_public_* ingest key to /v1/* OTLP endpoints.
+- status: 403
+  title: Forbidden
+  meaning: Token is valid but lacks access to the requested resource.
+- status: 404
+  title: Not Found
+  meaning: Resource does not exist in your org.
+- status: 409
+  title: Conflict
+  meaning: A unique constraint was violated (e.g., a project slug already in use).
+- status: 502
+  title: Bad Gateway
+  meaning: An upstream call (e.g., to GitHub) failed.
+- status: 503
+  title: Service Unavailable
+  meaning: A required server-side integration is not configured.
+operation_status_map:
+- {operation: postApiV1Projects, statuses: [200, 400, 401, 409]}
+- {operation: getApiV1Projects, statuses: [200, 401]}
+- {operation: getApiV1ProjectsByProjectId, statuses: [200, 401, 404]}
+- {operation: patchApiV1ProjectsByProjectId, statuses: [200, 400, 401, 404, 409]}
+- {operation: postApiV1ProjectsByProjectIdApiKeys, statuses: [200, 401, 404]}
+- {operation: postApiV1IntegrationsGithubInstallUrl, statuses: [200, 400, 401, 503]}
+- {operation: getApiV1IntegrationsGithubInstallationsByInstallationRowIdRepos, statuses: [200, 401, 404, 502]}
+- {operation: postApiV1ProjectsByProjectIdGithubRepos, statuses: [200, 400, 401, 404, 502]}
+- {operation: getApiV1ProjectsByProjectIdTracesByTraceId, statuses: [200, 400, 401, 404]}

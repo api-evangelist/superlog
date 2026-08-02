@@ -1,0 +1,64 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/superlog-management-openapi.json + https://docs.superlog.sh/concepts
+note: >-
+  The OpenAPI declares inline schemas (no reusable components.schemas), so relationships are
+  derived from path structure and the documented object model (concepts + webhook payloads).
+  IDs are UUIDs unless noted.
+entities:
+- name: organization
+  description: Top-level tenant; management keys are org-scoped.
+- name: project
+  id: uuid
+  description: Unit of isolation — owns ingest keys, incidents, dashboards, alerts, agent config.
+  relationships:
+  - {type: belongs_to, target: organization}
+  - {type: has_many, target: api_key, via: projectId}
+  - {type: has_many, target: incident, via: projectId}
+  - {type: has_many, target: dashboard, via: projectId}
+  - {type: has_many, target: alert, via: projectId}
+  - {type: has_many, target: agent_memory, via: projectId}
+- name: api_key
+  description: Project-scoped ingest key (sl_public_) or org management key (sl_management_).
+  relationships:
+  - {type: belongs_to, target: project, via: projectId}
+- name: telemetry
+  description: OTLP traces (spans), logs, and metrics ingested per project.
+  variants: [trace, log, metric]
+  relationships:
+  - {type: belongs_to, target: project, via: projectId}
+- name: incident
+  id: uuid
+  description: Auto-grouped cluster of related errors/anomalies; has status, severity, codename.
+  relationships:
+  - {type: belongs_to, target: project, via: project.id}
+  - {type: has_many, target: agent_run, via: incident}
+  - {type: has_one, target: incident, via: mergedIntoId}
+- name: agent_run
+  id: uuid
+  description: AI investigation of an incident; may open a fix PR and file a Linear ticket.
+  relationships:
+  - {type: belongs_to, target: incident, via: findingsAgentRunId}
+  - {type: has_many, target: pull_request}
+  - {type: has_many, target: linear_ticket}
+- name: pull_request
+  description: GitHub fix PR opened by an agent run (repoFullName, prNumber, url, state).
+  relationships:
+  - {type: belongs_to, target: agent_run}
+- name: dashboard
+  description: Visualization board of widgets with template variables.
+  relationships:
+  - {type: belongs_to, target: project, via: projectId}
+  - {type: has_many, target: widget, via: dashboard_id}
+- name: alert
+  description: Threshold rule over logs/traces/metrics with firings history.
+  relationships:
+  - {type: belongs_to, target: project, via: projectId}
+- name: agent_memory
+  description: Durable reusable fact injected into every investigation (kind, title, body, status).
+  relationships:
+  - {type: belongs_to, target: project, via: projectId}
+- name: github_installation
+  description: Connected GitHub App installation exposing repos an agent may open PRs against.
+  relationships:
+  - {type: has_many, target: repo, via: installationRowId}

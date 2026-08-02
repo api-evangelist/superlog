@@ -1,0 +1,12 @@
+generated: '2026-07-21'
+method: searched
+probe: true
+source: https://trust.superlog.sh/
+url: https://trust.superlog.sh/
+certifications:
+- SOC 2
+evidence:
+- source: https://trust.superlog.sh/
+  keywords:
+  - soc 2
+  - soc2

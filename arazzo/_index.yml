@@ -1,0 +1,8 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/superlog-management-openapi.json
+workflows:
+- file: superlog-provision-project.yml
+  workflowId: provisionProjectAndIngestKey
+  title: Provision a Superlog project and mint an ingest key
+  summary: Create a project, then mint a project-scoped OTLP ingest key.

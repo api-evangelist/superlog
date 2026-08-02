@@ -1,0 +1,27 @@
+generated: '2026-07-21'
+method: searched
+source: https://github.com/superloglabs/cli
+name: superlog
+package: "@superlog/cli"
+license: MIT
+install:
+- npx @superlog/cli
+- npm i -g @superlog/cli
+requires: Node >= 20
+commands:
+- name: init
+  usage: superlog init [--cwd <path>]
+  description: >-
+    Detects your stack, writes OpenTelemetry instrumentation, and points spans at Superlog so
+    the project starts receiving traces, logs, and metrics immediately.
+  flags:
+  - {flag: --cwd, description: "Project directory to instrument (default: current directory)."}
+- name: agent
+  usage: superlog agent install --endpoint <url> --token <ingest-token> --project-id <id>
+  description: Install/manage the local on-host OpenTelemetry agent via launchd (macOS).
+  subcommands: [install]
+endpoints:
+  otlp_intake: https://intake.superlog.sh
+notes: >-
+  The CLI binary is catalogued in packages/ (@superlog/cli); this artifact captures its command
+  surface. Companion Agent Skills auto-install Superlog via `npx skills add superloglabs/skills`.

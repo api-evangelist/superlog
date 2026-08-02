@@ -1,0 +1,33 @@
+generated: '2026-07-21'
+method: searched
+source: https://api.superlog.sh/.well-known/oauth-authorization-server
+docs: https://docs.superlog.sh/api/mcp-overview
+note: >-
+  The Management REST API (/api/v1/*) uses opaque Bearer management keys, not OAuth, and has
+  no scope surface. OAuth 2.0 applies to the Superlog MCP server, whose authorization-server
+  metadata advertises authorization-code + PKCE (S256), refresh tokens, and dynamic client
+  registration. Token-level scoping is also documented for Personal Access Tokens.
+schemes:
+- name: OAuth2 (MCP)
+  source: https://api.superlog.sh/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://api.superlog.sh/oauth/authorize
+    tokenUrl: https://api.superlog.sh/oauth/token
+    registrationUrl: https://api.superlog.sh/oauth/register
+    pkce: S256
+scopes:
+- scope: mcp:read
+  description: Read access advertised by the MCP OAuth protected-resource / authorization-server metadata.
+  flows: [authorizationCode]
+  sources: [https://api.superlog.sh/.well-known/oauth-protected-resource]
+- scope: superlog:telemetry
+  description: >-
+    Telemetry-only token scope — limits an MCP token to the telemetry and project tools
+    (query_logs, query_traces, query_metrics, list_services) with no dashboard/alert/agent access.
+  flows: [pat]
+  sources: [https://docs.superlog.sh/api/mcp-overview]
+- scope: full-access
+  description: Default token scope granting all MCP tools (telemetry, incidents, dashboards, alerts, agent config).
+  flows: [pat]
+  sources: [https://docs.superlog.sh/api/mcp-overview]

@@ -1,0 +1,33 @@
+generated: '2026-07-21'
+method: searched
+source: https://docs.superlog.sh + https://api.superlog.sh/.well-known/*
+standards:
+- id: opentelemetry-otlp
+  conforms: true
+  evidence: >-
+    Ingests standard OTLP/HTTP for traces, logs, and metrics (POST /v1/traces, /v1/logs,
+    /v1/metrics) in protobuf or JSON; accepts standard OTLP ExportServiceRequest bodies.
+- id: model-context-protocol
+  conforms: true
+  evidence: Hosted MCP server over streamable HTTP with ~34 tools (docs.superlog.sh/api/mcp-tools).
+- id: oauth2
+  conforms: true
+  evidence: MCP OAuth 2.0 authorization-code + PKCE (S256), refresh tokens, dynamic client registration.
+- id: rfc8414-oauth-as-metadata
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns 200 with issuer/endpoints/PKCE methods.
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: /.well-known/oauth-protected-resource returns 200 advertising the MCP resource + scopes.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'Errors use a custom {"error": "..."} envelope, not application/problem+json.'
+- id: webhook-hmac-signing
+  conforms: true
+  evidence: Incident webhooks signed HMAC-SHA256 (Superlog-Signature t=,v1=) with replay protection.
+- id: soc2
+  conforms: true
+  evidence: SOC 2 published on the trust center (https://trust.superlog.sh/).

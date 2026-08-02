@@ -1,0 +1,46 @@
+generated: '2026-07-21'
+method: searched
+source: https://github.com/superloglabs + npmjs.com
+packages:
+- language: javascript
+  registry: npm
+  name: "@superlog/cli"
+  url: https://www.npmjs.com/package/@superlog/cli
+  install: npx @superlog/cli
+  version: 0.1.8
+  license: MIT
+  repo: https://github.com/superloglabs/cli
+  official: true
+  description: >-
+    Superlog CLI — detects your stack, writes OpenTelemetry instrumentation, points spans at
+    Superlog, and manages the on-host agent (superlog init / superlog agent).
+- language: javascript
+  registry: npm
+  name: "@superlog/expo"
+  url: https://www.npmjs.com/package/@superlog/expo
+  install: npm install @superlog/expo
+  version: 0.1.2
+  repo: https://github.com/superloglabs/superlog-expo
+  official: true
+  description: OpenTelemetry-based observability SDK for Expo and React Native applications.
+- language: shell
+  registry: homebrew
+  name: superloglabs/tap
+  url: https://github.com/superloglabs/homebrew-tap
+  install: brew tap superloglabs/tap
+  official: true
+  description: Homebrew tap distributing Superlog's on-host observability tools.
+- language: rust
+  registry: source
+  name: superlog-agent
+  url: https://github.com/superloglabs/agent
+  official: true
+  description: >-
+    On-host OpenTelemetry agent (Rust) that instruments and forwards telemetry to Superlog;
+    distributed via the Homebrew tap and `superlog agent install`.
+- language: typescript
+  registry: source
+  name: otel-helpers
+  url: https://github.com/superloglabs/otel-helpers
+  official: true
+  description: Tiny TypeScript helpers for native OpenTelemetry spans and Superlog integration.

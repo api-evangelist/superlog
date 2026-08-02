@@ -1,0 +1,31 @@
+generated: '2026-07-21'
+method: searched
+source: https://docs.superlog.sh
+versioning:
+  scheme: uri-path
+  current: v1
+  base: https://api.superlog.sh/api/v1
+  docs: https://docs.superlog.sh/api/overview
+  spec_version: 1.0.0
+editions:
+- name: Community
+  license: Apache-2.0
+  model: self-hosted open-source
+  repo: https://github.com/superloglabs/superlog
+- name: Superlog Cloud
+  model: managed hosted
+  signup: https://app.superlog.sh
+deprecation:
+  policy_url: null
+  sunset_header: false
+  notes: >-
+    No formal deprecation/sunset policy published as of this pass; one legacy ingest-key
+    prefix (superlog_live_) is documented as superseded by sl_public_.
+sla:
+  url: null
+status_page: null
+deprecated_operations: []
+notes: >-
+  No public status page (status.superlog.sh does not resolve) and no published SLA at this
+  early stage (YC Spring 2026). Self-hosting via Docker Compose is documented at
+  https://docs.superlog.sh/self-hosting.

@@ -1,0 +1,37 @@
+generated: '2026-07-21'
+method: searched
+source: https://docs.superlog.sh
+authentication:
+  style: bearer
+  key_types:
+  - {name: management key, prefix: sl_management_, scope: org-wide, use: /api/v1/* REST}
+  - {name: ingest key, prefix: sl_public_, legacy_prefix: superlog_live_, scope: single project, use: OTLP /v1/traces /v1/logs /v1/metrics}
+  - {name: personal access token, prefix: superlog_pat_, scope: user + project, use: MCP server}
+  ingest_header: 'x-api-key: <token> (or Authorization: Bearer <token>)'
+  ref: authentication/superlog-authentication.yml
+error_envelope:
+  shape: '{ "error": "human-readable message" }'
+  format: custom-non-rfc9457
+  ref: errors/superlog-problem-types.yml
+pagination:
+  style: limit-only
+  params: [limit]
+  notes: >-
+    Telemetry-read and MCP query tools cap rows with a `limit` parameter (e.g. 1-500 for
+    logs/traces/metrics, 1-200 for incidents). No cursor/offset pagination documented.
+request_idempotency:
+  supported: false
+  notes: >-
+    The Management API documents no request Idempotency-Key header. Idempotency instead appears
+    on the WEBHOOK RECEIVER side — each delivery carries a stable Superlog-Delivery UUID (reused
+    across the 8-attempt retry schedule) intended as the consumer's de-duplication key.
+webhooks:
+  signing: HMAC-SHA256 over `<timestamp>.<rawBody>`, header Superlog-Signature (t=,v1=)
+  replay_protection: reject timestamps drifting > 5 minutes
+  delivery_id_header: Superlog-Delivery
+  event_header: Superlog-Event
+  retries: 8 attempts over ~8 hours (immediate, 30s, 1m, 2m, 5m, 15m, 1h, 6h)
+  ref: asyncapi/superlog-webhooks.yml
+versioning:
+  ref: lifecycle/superlog-lifecycle.yml
+content_type: application/json (management API); application/json or application/x-protobuf (OTLP ingest)

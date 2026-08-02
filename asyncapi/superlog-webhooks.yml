@@ -1,0 +1,37 @@
+generated: '2026-07-21'
+method: searched
+source: https://docs.superlog.sh/configuration/webhooks
+spec_type: Webhooks
+transport: https-post
+content_type: application/json
+signing:
+  algorithm: HMAC-SHA256
+  header: Superlog-Signature
+  format: t=<unix-ts>,v1=<hex over "<ts>.<rawBody>">
+  secret_prefix: whsec_
+  replay_window_seconds: 300
+delivery:
+  timeout_seconds: 10
+  delivery_id_header: Superlog-Delivery
+  event_header: Superlog-Event
+  user_agent: Superlog-Webhooks/1.0
+  retries: [immediate, 30s, 1m, 2m, 5m, 15m, 1h, 6h]
+events:
+- name: incident.created
+  fires_when: A new incident is opened.
+  payload: '{ event, eventId, occurredAt, project, message, incident }'
+- name: incident.updated
+  fires_when: Any change to an existing incident, distinguished by change.kind.
+  payload: 'common envelope + change (+ agentRun / events / pullRequests / linearTickets on agent changes)'
+  change_kinds:
+  - {kind: resolved, adds: change.resolution}
+  - {kind: reopened, adds: 'change.reason, change.previousStatus'}
+  - {kind: merged, adds: 'change.mergedInto, change.evidence'}
+  - {kind: agent_started, adds: agentRun}
+  - {kind: agent_completed, adds: 'agentRun, events, pullRequests, linearTickets'}
+  - {kind: agent_failed, adds: 'agentRun (failureReason, failureCategory)'}
+  - {kind: agent_awaiting_input, adds: 'agentRun, change.reason/summary/question'}
+notes: >-
+  Superlog publishes a documented webhook catalog but no machine-readable AsyncAPI document.
+  Captured here as a Webhooks event surface. Endpoints are configured per project in
+  Settings > Webhooks; each endpoint subscribes to incident.created, incident.updated, or both.

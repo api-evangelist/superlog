@@ -1,0 +1,53 @@
+arazzo: 1.0.1
+info:
+  title: Provision a Superlog project and mint an ingest key
+  version: 1.0.0
+  summary: >-
+    Create a new Superlog project, then mint a project-scoped OTLP ingest key so a service can
+    start sending OpenTelemetry telemetry.
+sourceDescriptions:
+- name: superlog
+  url: ../openapi/superlog-management-openapi.json
+  type: openapi
+workflows:
+- workflowId: provisionProjectAndIngestKey
+  summary: Create a project and mint an ingest key for OTLP.
+  description: >-
+    Requires an org-scoped management key (Bearer sl_management_*). Creates a project, then
+    creates an ingest key scoped to it for use on the OTLP ingest endpoints.
+  inputs:
+    type: object
+    properties:
+      name: {type: string}
+      slug: {type: string}
+      keyName: {type: string}
+    required: [name, slug]
+  steps:
+  - stepId: createProject
+    operationId: postApiV1Projects
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.name
+        slug: $inputs.slug
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      projectId: $response.body#/id
+  - stepId: mintIngestKey
+    operationId: postApiV1ProjectsByProjectIdApiKeys
+    parameters:
+    - name: projectId
+      in: path
+      value: $steps.createProject.outputs.projectId
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.keyName
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      ingestKey: $response.body#/key
+  outputs:
+    projectId: $steps.createProject.outputs.projectId
+    ingestKey: $steps.mintIngestKey.outputs.ingestKey

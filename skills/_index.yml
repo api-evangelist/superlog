@@ -1,0 +1,35 @@
+generated: '2026-07-21'
+method: searched
+source: https://github.com/superloglabs/skills
+note: >-
+  Superlog publishes a first-party Agent Skills package (Apache/MIT, install via
+  `npx skills add superloglabs/skills --all`). The two API/MCP-facing skills are saved here
+  verbatim; the remaining skills in the package are OpenTelemetry instrumentation styles
+  (otel-*-style) that ship in the upstream repo.
+skills:
+- file: superlog-onboard.md
+  name: superlog-onboard
+  source: https://github.com/superloglabs/skills/blob/main/superlog-onboard/SKILL.md
+  api: openapi/superlog-management-openapi.json
+  description: >-
+    Onboard a repo to Superlog by installing OpenTelemetry traces/logs/metrics across every app
+    and service, pointing OTLP at https://intake.superlog.sh with an sl_public_ ingest token.
+- file: superlog-debug.md
+  name: superlog-debug
+  source: https://github.com/superloglabs/skills/blob/main/superlog-debug/SKILL.md
+  api: mcp/superlog-mcp.yml
+  operations: [get_active_project, list_projects, set_active_project, query_logs, query_traces, query_metrics, search_incidents, get_incident]
+  description: >-
+    Pull production telemetry from the Superlog MCP server to ground debugging and incident
+    response before reasoning about code.
+upstream_skills:
+- otel-onboarding-style
+- otel-generic-style
+- otel-python-style
+- otel-fastapi-style
+- otel-flask-style
+- otel-nextjs-style
+- otel-expo-style
+- otel-livekit-style
+- otel-supabase-edge-style
+- otel-instrument-feature
