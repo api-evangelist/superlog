@@ -110,6 +110,8 @@ apis:
   - type: AgenticAccess
     url: agentic-access/superlog-agentic-access.yml
 common:
+- type: Overlay
+  url: overlays/superlog-management-overlay.yaml
 - type: TrustCenter
   url: security/superlog-trust-center.yml
 - type: Compliance
