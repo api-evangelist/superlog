@@ -1,0 +1,145 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Superlog Management API keys GitHub integration API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "GitHub integration",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Mint an org-scoped GitHub App install URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.superlog.sh/api/v1/integrations/github/install-url"
+          },
+          "docs": "Resulting install is owned by the org and can be granted to multiple projects. `return_url` host must be in the org's allowlist."
+        },
+        {
+          "info": {
+            "name": "Mint a project-scoped GitHub App install URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/integrations/github/install-url",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Resulting install is bound to one project and is NOT listed by `GET /api/v1/integrations/github/installations`."
+        },
+        {
+          "info": {
+            "name": "List org-scoped GitHub installs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/integrations/github/installations"
+          },
+          "docs": "Project-scoped installs and revoked / suspended installs are excluded."
+        },
+        {
+          "info": {
+            "name": "List repos an install covers (live)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/integrations/github/installations/:installationRowId/repos",
+            "params": [
+              {
+                "name": "installationRowId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Live call to GitHub. Capped at 1000 repos; `truncated=true` means more exist. You can still grant a beyond-cap repo by passing its numeric ID to the grant endpoint (O(1) lookup)."
+        },
+        {
+          "info": {
+            "name": "List repo grants on a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/github/repos",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Grants whose underlying install has been revoked are filtered out."
+        },
+        {
+          "info": {
+            "name": "Grant a project access to a repo",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/github/repos",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Validates the install belongs to this org and the repo is covered by it (live GitHub check) so a leaked management key can't grant access to arbitrary repo IDs."
+        },
+        {
+          "info": {
+            "name": "Revoke a project's grant on a repo",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/github/repos/:repoId",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "repoId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Revoke a project's grant on a repo"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

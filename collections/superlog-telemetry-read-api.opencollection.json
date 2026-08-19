@@ -1,0 +1,150 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Superlog Management API keys Telemetry read API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Telemetry read",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a trace by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/traces/:traceId",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "traceId",
+                "value": "",
+                "type": "path",
+                "description": "Hex-encoded OTLP trace id."
+              }
+            ]
+          },
+          "docs": "Returns all spans and correlated logs for the given trace."
+        },
+        {
+          "info": {
+            "name": "Query logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/logs",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "trace_id",
+                "value": "",
+                "type": "query",
+                "description": "Hex-encoded OTLP trace id."
+              },
+              {
+                "name": "service",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "from",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 timestamp (e.g. '2026-05-25T19:00:00Z') or a ClickHouse relative expression (e.g. 'now() - INTERVAL 1 HOUR'). Defaults: from=1h ago, to=now."
+              },
+              {
+                "name": "to",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 timestamp (e.g. '2026-05-25T19:00:00Z') or a ClickHouse relative expression (e.g. 'now() - INTERVAL 1 HOUR'). Defaults: from=1h ago, to=now."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns log rows filtered by any combination of trace_id, service, severity, free-text search, and time range. Newest first."
+        },
+        {
+          "info": {
+            "name": "Query metric data points",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/metrics",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "name",
+                "value": "",
+                "type": "query",
+                "description": "Metric name (e.g. 'http.server.duration')."
+              },
+              {
+                "name": "service",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "from",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 timestamp (e.g. '2026-05-25T19:00:00Z') or a ClickHouse relative expression (e.g. 'now() - INTERVAL 1 HOUR'). Defaults: from=1h ago, to=now."
+              },
+              {
+                "name": "to",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 timestamp (e.g. '2026-05-25T19:00:00Z') or a ClickHouse relative expression (e.g. 'now() - INTERVAL 1 HOUR'). Defaults: from=1h ago, to=now."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns metric data points across sum/gauge/histogram tables, filtered by metric name and (optionally) service / time range."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -16,7 +16,8 @@ auth:
   oauth:
     protected_resource_metadata: https://api.superlog.sh/.well-known/oauth-protected-resource
     authorization_server_metadata: https://api.superlog.sh/.well-known/oauth-authorization-server
-    scopes: [mcp:read]
+    scopes:
+    - mcp:read
   token_scopes:
   - name: full-access
     description: All tools (default token scope).
@@ -27,37 +28,120 @@ install:
   codex: codex mcp add superlog --url https://api.superlog.sh/mcp
   skills: npx skills add superloglabs/skills --all
 tools:
-- {name: query_logs, category: telemetry, description: Search OpenTelemetry log records in the active project.}
-- {name: query_traces, category: telemetry, description: Search OpenTelemetry spans in the active project.}
-- {name: query_metrics, category: telemetry, description: Fetch metric data points across gauge, sum, histogram, summary tables.}
-- {name: list_services, category: telemetry, description: List distinct service.name values emitting telemetry in a window.}
-- {name: get_incident, category: incidents, description: Fetch one incident by UUID with agent findings and telemetry samples.}
-- {name: search_incidents, category: incidents, description: Search incidents in the active project by status/severity/service.}
-- {name: list_projects, category: projects, description: List every project the user can access.}
-- {name: get_active_project, category: projects, description: Return the session's default project.}
-- {name: set_active_project, category: projects, description: Change the default project for subsequent calls.}
-- {name: list_dashboards, category: dashboards, description: List all dashboards in the active project.}
-- {name: get_dashboard, category: dashboards, description: Fetch a dashboard with all of its widgets.}
-- {name: create_dashboard, category: dashboards, description: Create a dashboard, optionally seeding template variables.}
-- {name: update_dashboard, category: dashboards, description: Rename a dashboard.}
-- {name: add_dashboard_widget, category: dashboards, description: Append a widget to a dashboard.}
-- {name: update_dashboard_widget, category: dashboards, description: Patch a widget's title, config, or layout.}
-- {name: delete_dashboard_widget, category: dashboards, description: Remove a widget from a dashboard.}
-- {name: set_dashboard_variables, category: dashboards, description: Replace a dashboard's template-variable list.}
-- {name: delete_dashboard, category: dashboards, description: Delete a dashboard and its widgets.}
-- {name: list_alerts, category: alerts, description: List all alerts in the active project.}
-- {name: get_alert, category: alerts, description: Fetch an alert plus its recent firings.}
-- {name: create_alert, category: alerts, description: Create a threshold alert on logs, traces, or metrics.}
-- {name: update_alert, category: alerts, description: Patch an existing alert.}
-- {name: delete_alert, category: alerts, description: Permanently delete an alert.}
-- {name: preview_alert, category: alerts, description: Evaluate a draft alert spec against current data without saving.}
-- {name: test_alert, category: alerts, description: Re-evaluate a saved alert against current data.}
-- {name: get_issue_filter, category: agent-config, description: Read the project's issue include/exclude filter.}
-- {name: update_issue_filter, category: agent-config, description: Update the project's issue filter buckets.}
-- {name: preview_issue_filter, category: agent-config, description: Preview which recent ERROR events survive a candidate filter.}
-- {name: get_project_context, category: agent-config, description: Read the project's freeform investigation context.}
-- {name: set_project_context, category: agent-config, description: Overwrite the project's freeform context.}
-- {name: create_agent_memory, category: agent-config, description: Store a durable learning injected into future investigations.}
-- {name: list_agent_memories, category: agent-config, description: List active and archived agent memories.}
-- {name: update_agent_memory, category: agent-config, description: Patch or archive a stored memory.}
-- {name: delete_agent_memory, category: agent-config, description: Permanently delete a stored memory.}
+- name: query_logs
+  category: telemetry
+  description: Search OpenTelemetry log records in the active project.
+- name: query_traces
+  category: telemetry
+  description: Search OpenTelemetry spans in the active project.
+- name: query_metrics
+  category: telemetry
+  description: Fetch metric data points across gauge
+  sum: null
+  histogram: null
+  summary tables.: null
+- name: list_services
+  category: telemetry
+  description: List distinct service.name values emitting telemetry in a window.
+- name: get_incident
+  category: incidents
+  description: Fetch one incident by UUID with agent findings and telemetry samples.
+- name: search_incidents
+  category: incidents
+  description: Search incidents in the active project by status/severity/service.
+- name: list_projects
+  category: projects
+  description: List every project the user can access.
+- name: get_active_project
+  category: projects
+  description: Return the session's default project.
+- name: set_active_project
+  category: projects
+  description: Change the default project for subsequent calls.
+- name: list_dashboards
+  category: dashboards
+  description: List all dashboards in the active project.
+- name: get_dashboard
+  category: dashboards
+  description: Fetch a dashboard with all of its widgets.
+- name: create_dashboard
+  category: dashboards
+  description: Create a dashboard
+  optionally seeding template variables.: null
+- name: update_dashboard
+  category: dashboards
+  description: Rename a dashboard.
+- name: add_dashboard_widget
+  category: dashboards
+  description: Append a widget to a dashboard.
+- name: update_dashboard_widget
+  category: dashboards
+  description: Patch a widget's title
+  config: null
+  or layout.: null
+- name: delete_dashboard_widget
+  category: dashboards
+  description: Remove a widget from a dashboard.
+- name: set_dashboard_variables
+  category: dashboards
+  description: Replace a dashboard's template-variable list.
+- name: delete_dashboard
+  category: dashboards
+  description: Delete a dashboard and its widgets.
+- name: list_alerts
+  category: alerts
+  description: List all alerts in the active project.
+- name: get_alert
+  category: alerts
+  description: Fetch an alert plus its recent firings.
+- name: create_alert
+  category: alerts
+  description: Create a threshold alert on logs
+  traces: null
+  or metrics.: null
+- name: update_alert
+  category: alerts
+  description: Patch an existing alert.
+- name: delete_alert
+  category: alerts
+  description: Permanently delete an alert.
+- name: preview_alert
+  category: alerts
+  description: Evaluate a draft alert spec against current data without saving.
+- name: test_alert
+  category: alerts
+  description: Re-evaluate a saved alert against current data.
+- name: get_issue_filter
+  category: agent-config
+  description: Read the project's issue include/exclude filter.
+- name: update_issue_filter
+  category: agent-config
+  description: Update the project's issue filter buckets.
+- name: preview_issue_filter
+  category: agent-config
+  description: Preview which recent ERROR events survive a candidate filter.
+- name: get_project_context
+  category: agent-config
+  description: Read the project's freeform investigation context.
+- name: set_project_context
+  category: agent-config
+  description: Overwrite the project's freeform context.
+- name: create_agent_memory
+  category: agent-config
+  description: Store a durable learning injected into future investigations.
+- name: list_agent_memories
+  category: agent-config
+  description: List active and archived agent memories.
+- name: update_agent_memory
+  category: agent-config
+  description: Patch or archive a stored memory.
+- name: delete_agent_memory
+  category: agent-config
+  description: Permanently delete a stored memory.
+deployment:
+  mode: remote
+  endpoint: https://api.superlog.sh/mcp
+  verified: probed
+  probe: gated
+  checked: '2026-08-12'
+  source: catalog MCP census

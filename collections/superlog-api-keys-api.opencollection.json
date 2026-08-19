@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Superlog Management API keys API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "API keys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List ingest API keys for a project",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/api-keys",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List ingest API keys for a project"
+        },
+        {
+          "info": {
+            "name": "Mint a new ingest API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.superlog.sh/api/v1/projects/:projectId/api-keys",
+            "params": [
+              {
+                "name": "projectId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Mint a new ingest API key"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
