@@ -42,6 +42,18 @@ tags:
 - Metrics
 - Incident Management
 - AI Agents
+- MCP
+- Developer Tools
+tags_raw:
+- Company
+- Observability
+- OpenTelemetry
+- Monitoring
+- Logging
+- Tracing
+- Metrics
+- Incident Management
+- AI Agents
 - Model Context Protocol
 - Developer Tools
 apis:
@@ -51,6 +63,8 @@ apis:
   humanURL: https://docs.superlog.sh/api/overview
   baseURL: https://api.superlog.sh
   tags:
+  - APIKeys
+  tags_raw:
   - API keys
   properties:
   - type: OpenAPI
@@ -67,6 +81,8 @@ apis:
   humanURL: https://docs.superlog.sh/api/overview
   baseURL: https://api.superlog.sh
   tags:
+  - GitHub Integration
+  tags_raw:
   - GitHub integration
   properties:
   - type: OpenAPI
@@ -83,6 +99,8 @@ apis:
   humanURL: https://docs.superlog.sh/api/overview
   baseURL: https://api.superlog.sh
   tags:
+  - Project
+  tags_raw:
   - Projects
   properties:
   - type: OpenAPI
