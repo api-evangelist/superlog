@@ -75,7 +75,7 @@ apis:
   humanURL: https://docs.superlog.sh/api/overview
   baseURL: https://api.superlog.sh
   tags:
-  - APIKeys
+  - API keys
   tags_raw:
   - API keys
   properties:
@@ -93,7 +93,7 @@ apis:
   humanURL: https://docs.superlog.sh/api/overview
   baseURL: https://api.superlog.sh
   tags:
-  - GitHub Integration
+  - GitHub integration
   tags_raw:
   - GitHub integration
   properties:
