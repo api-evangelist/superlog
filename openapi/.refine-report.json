@@ -1,10 +1,7 @@
 {
   "provider": "superlog",
   "sources": [
-    "superlog-api-keys-api-openapi.yml",
-    "superlog-github-integration-api-openapi.yml",
-    "superlog-projects-api-openapi.yml",
-    "superlog-telemetry-read-api-openapi.yml"
+    "_original/superlog-management-openapi.json"
   ],
   "outputs": [
     "superlog-api-keys-api-openapi.yml",
@@ -15,6 +12,16 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "superlog-management-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "superlog-management-openapi.json: declared missing tag: Telemetry read",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "superlog-api-keys-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "superlog-github-integration-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "superlog-projects-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "superlog-telemetry-read-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Superlog Management API keys Telemetry read API
+  title: Superlog Management Telemetry read API
   description: Programmatic surface for provisioning projects, ingest keys, and GitHub access. Authenticated with org-scoped management keys (prefix `sl_management_*`).
   version: 1.0.0
 servers:
