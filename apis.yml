@@ -142,6 +142,9 @@ apis:
   - type: AgenticAccess
     url: agentic-access/superlog-agentic-access.yml
 common:
+- type: CapabilityMap
+  url: capabilities/superlog-capability-edges.yml
+  name: Superlog Business Capability Map
 - type: Website
   url: https://www.superlog.sh/
 - type: Overlay
