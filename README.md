@@ -64,6 +64,142 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Superlog is a company surfaced as a portfolio company of y-combinator and added to the API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+Superlog is an AI-native, open-core observability platform (Y Combinator, Spring 2026) that ingests OpenTelemetry traces, logs, and metrics over OTLP, groups noisy signals into incidents, and dispatches AI agents to investigate root causes and open fix pull requests automatically. It offers a Management REST API for provisioning projects and ingest keys, OTLP ingest endpoints, a hosted Model Context Protocol (MCP) server so coding assistants like Claude and Cursor can query telemetry and incidents, signed incident webhooks, and GitHub/Slack/Linear/AWS integrations. The Community edition is Apache-2.0 licensed and self-hostable via Docker Compose; Superlog Cloud is the managed offering.
 
-Backed by: y-combinator
+**Areas:** Company · Observability · OpenTelemetry · Monitoring · Logging · Tracing · Metrics · Incident Management · AI Agents · MCP · Developer Tools
+
+## Superlog on APIs.io
+
+Everything profiled for Superlog is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/superlog/](https://apis.io/providers/superlog/)** — or go straight to one of the APIs or properties below.
+
+### APIs (4)
+
+- [Superlog API keys API](https://apis.io/apis/superlog/superlog-api-keys-api/) — The API keys API from Superlog — 1 operation(s) for api keys.
+- [Superlog GitHub integration API](https://apis.io/apis/superlog/superlog-github-integration-api/) — The GitHub integration API from Superlog — 6 operation(s) for github integration.
+- [Superlog Projects API](https://apis.io/apis/superlog/superlog-projects-api/) — The Projects API from Superlog — 3 operation(s) for projects.
+- [Superlog Telemetry read API](https://apis.io/apis/superlog/superlog-telemetry-read-api/) — The Telemetry read API from Superlog — 3 operation(s) for telemetry read.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### Arazzo workflows (1)
+
+Multi-step workflows that chain operations into a business task.
+
+- [Provision a Superlog project and mint an ingest key](https://apis.io/arazzos/superlog/superlog-provision-project/)
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Superlog Webhooks](https://apis.io/asyncapis/superlog/superlog-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [superlog](https://apis.io/servers/superlog/superlog/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Superlog Agentic Access](https://apis.io/agentic-access/superlog/superlog-agentic-access/)
+
+#### Collections (4)
+
+Postman and Open Collection request collections.
+
+- [Superlog Management API keys API](https://apis.io/collections/superlog/open-superlog-api-keys-api/)
+- [Superlog Management API keys GitHub integration API](https://apis.io/collections/superlog/open-superlog-github-integration-api/)
+- [Superlog Management API keys Projects API](https://apis.io/collections/superlog/open-superlog-projects-api/)
+- [Superlog Management API keys Telemetry read API](https://apis.io/collections/superlog/open-superlog-telemetry-read-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Superlog Management Overlay](https://apis.io/overlays/superlog/superlog-management-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Superlog Authentication](https://apis.io/security/superlog/superlog-authentication/)
+- [Superlog Domain Security](https://apis.io/security/superlog/superlog-domain-security/)
+- [Superlog Trust Center](https://apis.io/security/superlog/superlog-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Superlog Scopes](https://apis.io/scopes/superlog/superlog-scopes/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.superlog.sh/)
+- [Documentation](https://docs.superlog.sh/introduction)
+- [Getting started](https://docs.superlog.sh/quickstart)
+- [API reference](https://api.superlog.sh/api/v1/docs)
+- [Sign up](https://app.superlog.sh)
+- [Blog](https://superlog.sh/blog)
+- [Compliance](https://trust.superlog.sh/)
+- [GitHub](https://github.com/superloglabs)
+
+## API Evangelist rating
+
+**Kin Score 42.9** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 52.8 |
+| Contract governance | 18.2 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 73.8 |
+| Access clarity | 14.5 |
+
+**Agent readiness 51.8** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | yes |
+| Agent Skills | yes |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 26.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/superlog/](https://apis.io/providers/superlog/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Superlog: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/superlog/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
